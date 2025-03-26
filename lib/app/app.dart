@@ -8,7 +8,7 @@ class AdvancedPhotoEditorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pro Photo Editor',
+      title: 'Photo Forge',
       debugShowCheckedModeBanner: false,
       theme: appTheme,
       home: const PhotoEditorScreen(),

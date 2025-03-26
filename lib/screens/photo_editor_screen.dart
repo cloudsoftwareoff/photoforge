@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:photoforge/services/crop_image.dart';
 import '../widgets/filter_item.dart';
 import '../widgets/adjustment_slider.dart';
 import '../models/image_filter.dart';
@@ -65,7 +66,27 @@ class _PhotoEditorScreenState extends State<PhotoEditorScreen> {
       _showErrorSnackbar('Failed to load image: ${e.toString()}');
     }
   }
+Future<void> _cropImage() async {
+  if (_imageFile == null) return;
 
+  final croppedFile = await ImageUtils.cropImage(
+    sourceFile: _imageFile!,
+    onError: _showErrorSnackbar,
+    onStart: () => setState(() => _isProcessing = true),
+    onComplete: () => setState(() => _isProcessing = false),
+    toolbarColor: Theme.of(context).primaryColor,
+    toolbarWidgetColor: Colors.white,
+  );
+
+  if (croppedFile != null) {
+    final bytes = await croppedFile.readAsBytes();
+    setState(() {
+      _imageFile = croppedFile;
+      _processedImage = bytes;
+      _resetAdjustments(); // Reset filters after crop
+    });
+  }
+}
   Future<void> _saveImage() async {
     if (_processedImage == null) return;
 
@@ -74,6 +95,7 @@ class _PhotoEditorScreenState extends State<PhotoEditorScreen> {
     });
 
     try {
+      final status = await checkStoragePermission();
       final filePath = await saveImageToGallery(_processedImage!);
       _showSuccessSnackbar('Image saved to $filePath');
     } catch (e) {
@@ -182,9 +204,15 @@ class _PhotoEditorScreenState extends State<PhotoEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pro Photo Editor'),
+        title: const Text('Photo Forge'),
         centerTitle: true,
-        actions: [
+    actions: [
+          if (_imageFile != null)
+            IconButton(
+              icon: const Icon(Icons.crop),
+              onPressed: _isProcessing ? null : _cropImage,
+              tooltip: 'Crop Image',
+            ),
           if (_imageFile != null)
             IconButton(
               icon: const Icon(Icons.refresh),

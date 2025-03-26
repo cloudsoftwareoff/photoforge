@@ -1,4 +1,4 @@
-package com.example.photoforge
+package com.cloudsoftware.photoforge
 
 import io.flutter.embedding.android.FlutterActivity
 
