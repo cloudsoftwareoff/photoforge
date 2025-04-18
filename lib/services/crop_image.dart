@@ -16,7 +16,7 @@ class ImageUtils {
     try {
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: sourceFile.path,
-       // cropStsyle: CropStyle.rectangle, // or CropStyle.circle for circular crops
+
         aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0), // Default square
         // aspectRatioPresets: [
         //   CropAspectRatioPreset.original,
@@ -37,9 +37,7 @@ class ImageUtils {
             title: 'Crop Image',
             aspectRatioLockEnabled: false,
           ),
-          // WebUiSettings(
-          //   context: context, // You'll need to pass context if supporting web
-          // ),
+
         ],
       );
 
